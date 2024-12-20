@@ -13,10 +13,10 @@ visualize_angles <- function(data_path, results_folder) {
   plot_path_variance <- file.path(results_folder, paste0(base_name, "_RollingVariance.png"))
   
   png(plot_path_mean)
-  plot(RollingMean, type = "l", main = "Rolling Mean of APAngle", xlab = "Index", ylab = "Mean")
+  plot(RollingMean, type = "l", main = paste("Rolling Mean of APAngle", base_name), xlab = "Index", ylab = "Mean")
   dev.off()
   
   png(plot_path_variance)
-  plot(RollingVariance, type = "l", main = "Rolling Variance of APAngle", xlab = "Index", ylab = "Variance")
+  plot(RollingVariance, type = "l", main = paste("Rolling Variance of APAngle", base_name), xlab = "Index", ylab = "Variance")
   dev.off()
 }

@@ -3,6 +3,11 @@
 .RData
 .Ruserdata
 .venv/
-setpoint_experiment/data/
-Pilot1/data/
-Pilot2/data/
+data/
+rlmodelv1/A2/__pycache__/
+rlmodelv1/A3/__pycache__/
+rlmodelv1/project/__pycache__/
+rlmodelv1/A3/logs/
+rlmodelv1/project/logs/
+rlmodelv1/project/noise/
+rlmodelv1/project/saved_data/

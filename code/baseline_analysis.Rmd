@@ -1,0 +1,104 @@
+---
+title: "baseline_analysis"
+author: "Yixin (Izzy) Zhang"
+date: "2024-10-28"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r}
+getwd()
+```
+
+```{r}
+source("code/baseline-processing/data_cleaning_sp.R")
+
+clean_all_trials <- function(folder_name) {
+  raw_files <- list.files(folder_name, full.names = TRUE)
+  for (file in raw_files) {
+    clean_file(file)
+  }
+}
+
+combine_data <- function(folder_name) {
+  # clean_all_trials(folder_name)
+  cleaned_files <- list.files(folder_name, pattern = "pre\\d+_cleaned.csv$", full.names = TRUE)
+  outangle <- c()
+  outvel <- c()
+  for (file in cleaned_files) {
+    data <- read.csv(file)
+    angle <- data[,1]
+    vel <- data[,2]
+    # print(angle)
+    # print(vel)
+    # trim_angle <- remove_leading_zeros(angle)
+    # trim_vel <- remove_leading_zeros(vel)
+    # angle <- trim_angle[2500:(length(trim_angle) - 2500 + 1)]
+    # vel <- trim_vel[2500:(length(trim_vel) - 2500 + 1)]
+    angle <- angle[2500:(length(angle) - 2500 + 1)]
+    vel <- vel[2500:(length(vel) - 2500 + 1)]
+    outangle <- append(outangle, angle)
+    outvel <- append(outvel, vel)
+  }
+  print(paste("mean: ", mean(outangle), "sd: ", sd(outangle), "max_v: ", max(outvel)))
+  return(c(outangle, outvel))
+}
+folder_name = "./data/pilot3/data/robot"
+out = combine_data(folder_name)
+```
+
+```{r}
+source("code/baseline-processing/data_cleaning_sp.R")
+
+clean_all_trials_robot <- function(folder_name) {
+  raw_files <- list.files(folder_name, pattern = "\\d+\\.txt$", full.names = TRUE)
+  for (file in raw_files) {
+    clean_robot_file(file)
+  }
+}
+folder_name = "./data/pilot3/data/robot"
+clean_all_trials_robot(folder_name)
+```
+
+```{r}
+data <- read.csv("./data/pilot3/data/robot")
+```
+
+```{r}
+source("code/baseline-processing/data_cleaning_sp.R")
+
+clean_all_trials_emg <- function(folder_name) {
+  raw_files <- list.files(folder_name, pattern = "\\d+\\.txt$", full.names = TRUE)
+  for (file in raw_files) {
+    clean_emg_file(file)
+  }
+}
+folder_name = "./data/pilot3/data/EMG"
+clean_all_trials_emg(folder_name)
+```
+
+```{r}
+# Assuming your dataframe is named df
+df <- read.csv("./data/pilot2/data/robot/pre1_cleaned.csv")
+# Get the run-length encoding of the EMGTrigger column
+emg_rle <- rle(df$EMGTrigger)
+
+# Calculate the cumulative lengths to find positions in the dataframe
+cumulative_lengths <- cumsum(emg_rle$lengths)
+
+# Get the start position of the 140 5s run
+start_pos <- cumulative_lengths[1] + 1
+
+# Set the end position to one before the 70 5s start
+end_pos <- start_pos + 500*60 - 1
+
+# Subset the dataframe
+df_subset <- df[start_pos:end_pos, ]
+
+# View the subset dataframe
+head(df_subset)
+```
+

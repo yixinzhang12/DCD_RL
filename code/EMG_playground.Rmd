@@ -1,0 +1,85 @@
+---
+title: "EMG_playground"
+author: "Yixin (Izzy) Zhang"
+date: "2024-10-03"
+output: pdf_document
+---
+
+```{r}
+trial1 <- read.table("../data/pilot2/data/EMG/trial1.txt", skip = 1, sep = "", header = FALSE)
+colnames(trial1) <- c("sine_wave", "CH1", "CH2", "CH3", "CH4", "TRG")
+```
+
+```{r}
+plot(trial1$sine_wave[5000:7000], type = 'l')
+```
+
+```{r}
+# Plot each column individually
+num_columns <- ncol(trial1)
+
+# Loop through each column and plot
+for (i in 1:num_columns) {
+  column_name <- colnames(trial1)[i]
+  
+  # Create a new plot for each column
+  plot(trial1[[i]], type = "l", main = paste("Plot of", column_name),
+       xlab = "Sample Index", ylab = column_name, col = "blue")
+}
+```
+
+
+
+```{r}
+EMG <- read.csv("../data/pilot2/data/EMG/trial3_cleaned.csv")
+plot(EMG$CH1[100000:200000], type = "l")
+plot(EMG$CH2[100000:200000], type = "l")
+plot(EMG$CH3[100000:200000], type = "l")
+```
+
+```{r}
+EMG$CH3 <- EMG$CH3 - mean(EMG$CH3)
+plot(EMG$CH3[10000:15000], type = "l")
+```
+
+
+```{r}
+pref <- read.table("../data/pilot2/data/EMG/pre-b.txt", skip = 1, sep = "", header = FALSE)
+colnames(pref) <- c("sine_wave", "CH1", "CH2", "CH3", "CH4","TRG")
+```
+
+```{r}
+# Plot each column individually
+num_columns <- ncol(pref)
+
+# Loop through each column and plot
+for (i in 1:num_columns) {
+  column_name <- colnames(pref)[i]
+  
+  # Create a new plot for each column
+  plot(pref[[i]], type = "l", main = paste("Plot of", column_name),
+       xlab = "Sample Index", ylab = column_name, col = "blue")
+}
+```
+
+```{r}
+pref$TRG = round(pref$TRG)
+```
+
+```{r}
+trigger_rle <- rle(pref$TRG)
+cumulative_lengths <- cumsum(trigger_rle$lengths)
+start_pos <- cumulative_lengths[1] + 1
+end_pos <- cumulative_lengths[3]
+```
+
+```{r}
+library(data.table)
+library(dplyr)
+df_subset <- pref[start_pos:end_pos,]
+output_file <- "../data/pilot2/data/EMG/pre-b_cleaned.csv"
+  
+# Writing the DataFrame to a CSV file
+fwrite(df_subset, output_file)
+```
+
